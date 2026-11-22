@@ -18,8 +18,7 @@ class ProductsPage(BasePage):
         return ProductDetailPage(self.driver, self.settings).wait_for_page()
 
     def add_product_to_cart(self, name: str) -> "ProductsPage":
-        """Adds via the detail screen. This avoids locating a button inside a specific
-        list card, which needs different relative locators per platform."""
+        """Add from the detail page (simpler than finding the button inside the list card)."""
         self.open_product(name).add_to_cart().go_back()
         return self
 
@@ -46,7 +45,7 @@ class ProductDetailPage(BasePage):
     def add_to_cart(self) -> "ProductDetailPage":
         self.scroll_to(D.ADD_TO_CART)
         self.click(D.ADD_TO_CART)
-        self.waits.wait_for_visible(D.REMOVE)  # button flips to REMOVE once the cart is updated
+        self.waits.wait_for_visible(D.REMOVE)  # button changes to REMOVE when added
         return self
 
     def go_back(self) -> ProductsPage:

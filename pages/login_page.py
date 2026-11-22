@@ -22,7 +22,7 @@ class LoginPage(BasePage):
         return ProductsPage(self.driver, self.settings).wait_for_page()
 
     def try_login(self, username: str, password: str) -> "LoginPage":
-        """Submit credentials that are expected to be rejected; stay on this page."""
+        """For invalid logins - stays on the login page."""
         self.enter_credentials(username, password).click_login()
         return self
 

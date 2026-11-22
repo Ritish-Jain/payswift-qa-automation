@@ -8,7 +8,7 @@ class ProductsLocators:
     CART_ICON = Locator.accessibility_id("test-Cart", "Cart icon")
     PRODUCT_TITLES = Locator.accessibility_id("test-Item title", "All visible product titles")
 
-    # Product title by visible name. Android keeps the name in @text, iOS in label.
+    # product title by name
     PRODUCT_TITLE = Locator(
         android=(
             AppiumBy.ANDROID_UIAUTOMATOR,

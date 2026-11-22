@@ -1,7 +1,4 @@
-"""Loads externalised test data from the test_data/ folder.
-
-Decimal is used for every JSON number so prices and amounts keep their exact value.
-"""
+"""Reads JSON files from test_data/. Numbers are loaded as Decimal."""
 from __future__ import annotations
 
 import json

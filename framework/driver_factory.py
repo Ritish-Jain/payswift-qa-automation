@@ -1,8 +1,4 @@
-"""Creates an Appium session for the requested platform.
-
-Tests and page objects never import platform-specific option classes. They ask the
-factory for a driver, and the factory picks UiAutomator2 or XCUITest from the settings.
-"""
+"""Starts the Appium driver for Android (UiAutomator2) or iOS (XCUITest)."""
 from __future__ import annotations
 
 import logging
@@ -26,7 +22,6 @@ def create_driver(settings: Settings) -> webdriver.Remote:
     options = PLATFORM_OPTIONS[settings.platform]().load_capabilities(caps)
     logger.info("Starting %s session on %s", settings.platform, settings.appium_server_url)
     driver = webdriver.Remote(settings.appium_server_url, options=options)
-    # Implicit waits are disabled on purpose: mixing them with explicit waits makes
-    # timeouts unpredictable. All synchronisation goes through framework.waits.
+    # no implicit wait, we only use explicit waits (framework/waits.py)
     driver.implicitly_wait(0)
     return driver

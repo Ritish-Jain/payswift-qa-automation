@@ -1,8 +1,6 @@
-"""Contract checks for transfer initiation against the public mock endpoint.
+"""API tests for transfer initiate (jsonplaceholder mock).
 
-jsonplaceholder echoes the posted body and adds an integer "id", which stands in for
-the server-generated transaction id. The response body is parsed with Decimal so the
-amount is compared exactly, never as a float.
+The mock returns the request body plus an "id", used here as the transaction id.
 """
 from __future__ import annotations
 
@@ -18,7 +16,7 @@ pytestmark = pytest.mark.api
 
 
 def to_json(payload: dict) -> str:
-    """Serialise Decimal amounts as JSON numbers, refusing any value a float would distort."""
+    """Convert to JSON, Decimal amounts are sent as numbers."""
 
     def encode_decimal(value):
         if isinstance(value, Decimal):
@@ -34,8 +32,7 @@ def to_json(payload: dict) -> str:
 @pytest.fixture(scope="module")
 def response(session, base_url, transfer_data):
     url = f"{base_url}{transfer_data['endpoint']}"
-    # Warm-up: open the keep-alive connection first so the timed POST below measures API
-    # latency, not one-off DNS + TCP + TLS setup (often 300 ms+ on its own).
+    # warm up the connection so response time doesn't include DNS/TLS setup
     session.get(f"{base_url}/posts/1", timeout=10)
     response = session.post(url, data=to_json(transfer_data["transfer_request"]), timeout=10)
     return response
@@ -61,7 +58,7 @@ def test_content_type(response):
 
 
 def test_response_schema(response, schema):
-    body = response.json()  # jsonschema needs native numbers
+    body = response.json()  # jsonschema needs normal numbers
     errors = sorted(Draft202012Validator(schema).iter_errors(body), key=lambda e: e.path)
     assert not errors, "\n".join(f"{list(e.path)}: {e.message}" for e in errors)
 

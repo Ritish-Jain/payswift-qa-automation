@@ -1,8 +1,4 @@
-"""Touch gestures built on W3C pointer actions, which both UiAutomator2 and XCUITest support.
-
-Using W3C actions (instead of mobile: scroll or UiScrollable) keeps one implementation
-for both platforms.
-"""
+"""Swipe/scroll helpers using W3C actions, so the same code works on Android and iOS."""
 from __future__ import annotations
 
 from selenium.common.exceptions import NoSuchElementException
@@ -32,7 +28,7 @@ class Gestures:
         actions.perform()
 
     def swipe_up(self) -> None:
-        """Finger moves up, content scrolls down (reveals items lower in the list)."""
+        """Scrolls the list down."""
         size = self.driver.get_window_size()
         x = size["width"] // 2
         self.swipe(x, int(size["height"] * 0.75), x, int(size["height"] * 0.30))
@@ -43,11 +39,10 @@ class Gestures:
         self.swipe(x, int(size["height"] * 0.30), x, int(size["height"] * 0.75))
 
     def swipe_until_visible(self, target: Locator, list_items: Locator | None = None) -> None:
-        """Swipe up until target is on screen.
+        """Keep swiping until target is visible.
 
-        Stops early and fails if a swipe no longer changes what is visible, which means
-        we hit the end of the list. list_items is any locator whose texts change as
-        the list scrolls (for example item titles); without it we compare page source.
+        Stops when the visible items stop changing (end of list). If list_items is
+        not given, page source is compared instead.
         """
         last_seen = None
         for _ in range(self.max_swipes):

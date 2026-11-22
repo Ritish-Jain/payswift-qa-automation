@@ -1,8 +1,6 @@
-"""Test 3: swipe through a scrollable list to find an item that starts off-screen,
-then open it and verify its details.
+"""Test 3 - scroll the product list to an item that is off-screen and check its details.
 
-In PaySwift terms this is "scroll transaction history to a specific transaction and
-check its amount and narration".
+Like scrolling transaction history in PaySwift to find a transaction.
 """
 from __future__ import annotations
 

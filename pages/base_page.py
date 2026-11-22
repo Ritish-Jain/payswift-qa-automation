@@ -1,7 +1,4 @@
-"""Base class for all screens. Holds the driver, waits and gestures, and the small set of
-element interactions every page needs. Page objects never assert; they return state
-and the tests decide what is correct.
-"""
+"""Common actions for all pages. No asserts in page objects, only in tests."""
 from __future__ import annotations
 
 from framework.config import Settings
@@ -19,7 +16,6 @@ class BasePage:
         self.waits = Waits(driver, settings.platform, settings.wait_timeout)
         self.gestures = Gestures(driver, self.waits, settings.max_swipes)
 
-    # ---- screen state -------------------------------------------------------------
     def wait_for_page(self):
         if self.SCREEN is not None:
             self.waits.wait_for_visible(self.SCREEN)
@@ -28,7 +24,6 @@ class BasePage:
     def is_displayed(self) -> bool:
         return self.SCREEN is not None and self.waits.is_visible(self.SCREEN)
 
-    # ---- element actions ----------------------------------------------------------
     def click(self, locator: Locator) -> None:
         self.waits.wait_for_clickable(locator).click()
 

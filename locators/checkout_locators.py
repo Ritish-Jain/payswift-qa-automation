@@ -30,7 +30,7 @@ class CheckoutOverviewLocators:
     SCREEN = Locator.accessibility_id("test-CHECKOUT: OVERVIEW", "Checkout overview screen")
     FINISH = Locator.accessibility_id("test-FINISH", "Finish button")
 
-    # Summary labels have no test ids in the app, so they are matched by their prefix.
+    # no test ids on these labels, match by text prefix
     _ANDROID_PREFIX = 'new UiSelector().textStartsWith("{prefix}")'
     _IOS_PREFIX = 'type == "XCUIElementTypeStaticText" AND label BEGINSWITH "{prefix}"'
 

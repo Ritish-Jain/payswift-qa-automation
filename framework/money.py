@@ -1,9 +1,4 @@
-"""Money handling for assertions.
-
-Amounts are always compared as Decimal, never float. A float comparison can pass or
-fail for the wrong reason (0.1 + 0.2 != 0.3), which is exactly the class of defect a
-payments suite should catch rather than hide.
-"""
+"""Money helpers. Always use Decimal for amounts, never float."""
 from __future__ import annotations
 
 import re
@@ -14,10 +9,9 @@ CENTS = Decimal("0.01")
 
 
 def parse_amount(text: str) -> Decimal:
-    """Extract the amount from UI text such as 'Item total: $45.98' or '₹1,00,000.00'.
+    """Get the amount from text like 'Item total: $45.98' or '₹1,00,000.00'.
 
-    Keeps every digit the UI shows. A value like '59.980000000000004' is returned as is,
-    so a precision bug in the app surfaces as an assertion failure.
+    Digits are kept as shown, so '59.980000000000004' stays as is and fails the test.
     """
     match = AMOUNT_REGEX.search(text or "")
     if not match:

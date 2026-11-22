@@ -1,8 +1,4 @@
-"""Explicit wait helpers. This is the only place the suite waits for anything.
-
-There are no time.sleep() calls anywhere in the project. Every wait polls for a
-concrete condition and fails with a readable message naming the locator.
-"""
+"""Explicit waits. No time.sleep() in this project."""
 from __future__ import annotations
 
 from selenium.common.exceptions import TimeoutException
@@ -44,6 +40,6 @@ class Waits:
             raise TimeoutException(f"No elements found: {locator} using {strategy}") from exc
 
     def is_visible(self, locator: Locator) -> bool:
-        """Non-blocking check, used inside scroll loops."""
+        """Checks right now, no waiting."""
         elements = self.driver.find_elements(*locator.resolve(self.platform))
         return any(el.is_displayed() for el in elements)

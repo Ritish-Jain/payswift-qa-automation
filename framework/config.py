@@ -1,4 +1,4 @@
-"""Runtime settings. Everything environment-specific is read here and nowhere else."""
+"""Settings and capabilities, read from env vars and config/capabilities.yaml."""
 from __future__ import annotations
 
 import os
@@ -17,7 +17,7 @@ ENV_VAR_REGEX = re.compile(r"\$\{(?P<name>[A-Z0-9_]+)(?::-(?P<default>[^}]*))?\}
 
 
 def _expand_env_vars(value):
-    """Expand ${VAR} and ${VAR:-default} inside YAML string values."""
+    """Replace ${VAR} / ${VAR:-default} with env values."""
     if not isinstance(value, str):
         return value
 
@@ -60,7 +60,7 @@ def load_capabilities(platform: str) -> dict:
         caps_by_platform = yaml.safe_load(f)
     caps = {key: _expand_env_vars(val) for key, val in caps_by_platform[platform].items()}
 
-    # Resolve a relative app path against the project root so tests run from any cwd.
+    # make relative app path absolute
     app = caps.get("appium:app")
     if app and not app.startswith(("http://", "https://", "/", "storage:", "sauce-storage:")):
         caps["appium:app"] = str((PROJECT_ROOT / app).resolve())

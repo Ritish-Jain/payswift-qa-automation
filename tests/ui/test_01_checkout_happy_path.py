@@ -1,7 +1,6 @@
-"""Test 1: login and complete an end-to-end checkout, verifying the order totals.
+"""Test 1 - happy path: login, add items, checkout and check the totals.
 
-Stands in for the PaySwift transfer flow: select payee (products), review amount
-(overview), confirm (finish), receipt (complete screen).
+Same flow as a PaySwift transfer: select, review amount, confirm, receipt.
 """
 from __future__ import annotations
 

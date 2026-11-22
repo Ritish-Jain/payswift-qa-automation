@@ -1,10 +1,4 @@
-"""Cross-platform locator definition.
-
-A Locator holds one strategy per platform. Page objects declare locators once and the
-correct strategy is resolved at runtime from the active platform, so the same page
-class serves Android and iOS. Templated values (for example a product name) are filled
-with Locator.format(...).
-"""
+"""Locator with an Android and an iOS strategy. Use format() to fill {placeholders}."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -23,11 +17,7 @@ class Locator:
 
     @classmethod
     def accessibility_id(cls, value: str, description: str = "") -> "Locator":
-        """Use when the app exposes the same accessibility id on both platforms.
-
-        The demo app sets accessibilityLabel on Android and testID on iOS to the same
-        value, which Appium maps to the accessibility id strategy on both.
-        """
+        """Same accessibility id on both platforms."""
         strategy = (AppiumBy.ACCESSIBILITY_ID, value)
         return cls(android=strategy, ios=strategy, description=description or value)
 

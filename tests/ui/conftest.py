@@ -15,7 +15,7 @@ def settings(request):
 
 @pytest.fixture
 def driver(settings):
-    """A fresh app session per test, so no test depends on state left by another."""
+    """New app session for every test."""
     drv = create_driver(settings)
     yield drv
     drv.quit()

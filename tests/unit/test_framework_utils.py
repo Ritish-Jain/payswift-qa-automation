@@ -1,4 +1,4 @@
-"""Fast checks for framework helpers. No device or network needed."""
+"""Unit tests for framework helpers (no device needed)."""
 from __future__ import annotations
 
 from decimal import Decimal
@@ -69,7 +69,7 @@ def test_load_capabilities(monkeypatch):
     caps = load_capabilities("android")
     assert caps["appium:deviceName"] == "Pixel_8_API_34"
     assert caps["appium:automationName"] == "UiAutomator2"
-    # Compare path parts, not raw strings, so the check holds on Windows (\) and POSIX (/).
+    # compare path parts so it works on Windows and Linux/Mac
     assert Path(caps["appium:app"]).parts[-2:] == ("apps", "Android.SauceLabs.Mobile.Sample.app.2.7.1.apk")
 
 

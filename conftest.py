@@ -1,4 +1,4 @@
-"""Project-wide pytest hooks: CLI options and failure artefacts (screenshot + page source)."""
+"""Global pytest hooks: --platform option and screenshot on failure."""
 from __future__ import annotations
 
 import re
@@ -30,7 +30,7 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    # Capture on failures in setup or the test body, but only for tests that own a driver.
+    # only for failed UI tests (they have a driver)
     if report.when not in ("setup", "call") or not report.failed:
         return
     driver = item.funcargs.get("driver") if hasattr(item, "funcargs") else None
@@ -46,7 +46,7 @@ def pytest_runtest_makereport(item, call):
     try:
         driver.save_screenshot(str(png_path))
         xml_path.write_text(driver.page_source, encoding="utf-8")
-    except Exception as exc:  # the session may already be dead; never mask the real failure
+    except Exception as exc:  # session might be gone already, don't hide the real error
         report.sections.append(("failure artefacts", f"Could not capture artefacts: {exc}"))
         return
 

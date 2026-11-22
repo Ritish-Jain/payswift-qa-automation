@@ -8,7 +8,7 @@ class LoginLocators:
     PASSWORD = Locator.accessibility_id("test-Password", "Password input")
     LOGIN_BUTTON = Locator.accessibility_id("test-LOGIN", "Login button")
 
-    # The error container carries the test id; the message is its child text node.
+    # test id is on the container, text is in the child
     ERROR_MESSAGE = Locator(
         android=(AppiumBy.XPATH, '//*[@content-desc="test-Error message"]//android.widget.TextView'),
         ios=(AppiumBy.IOS_CLASS_CHAIN, '**/XCUIElementTypeOther[`name == "test-Error message"`]/**/XCUIElementTypeStaticText'),

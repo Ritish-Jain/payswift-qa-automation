@@ -1,7 +1,6 @@
-"""Test 2: negative and validation flows. Every case asserts the exact UI error text.
+"""Test 2 - negative cases: invalid login and checkout validation, checks exact error text.
 
-The locked-out user case mirrors PaySwift's "account locked after 3 failed PIN
-attempts" rule: the server rejects a known user and the UI must say why.
+locked_out_user is similar to PaySwift locking the account after 3 wrong PINs.
 """
 from __future__ import annotations
 
