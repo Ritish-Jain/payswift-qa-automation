@@ -185,7 +185,8 @@ The mock accepts any payload, so the negative cases (duplicate `idempotencyKey`,
 
 After a run, the HTML reports are in `reports/`. Failure screenshots and page source dumps go to `reports/screenshots/`.
 
-<!-- Screenshot of the HTML report from an emulator run -->
+pytest-html report from `python -m pytest tests/unit tests/api --html=reports/unit_api_report.html --self-contained-html` (24 passed):
+
 ![Sample report](docs/images/sample-report.png)
 
 ## Known limitations
