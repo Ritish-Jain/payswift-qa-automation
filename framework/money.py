@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
-_AMOUNT_PATTERN = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
-TWO_PLACES = Decimal("0.01")
+AMOUNT_REGEX = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
+CENTS = Decimal("0.01")
 
 
 def parse_amount(text: str) -> Decimal:
@@ -19,7 +19,7 @@ def parse_amount(text: str) -> Decimal:
     Keeps every digit the UI shows. A value like '59.980000000000004' is returned as is,
     so a precision bug in the app surfaces as an assertion failure.
     """
-    match = _AMOUNT_PATTERN.search(text or "")
+    match = AMOUNT_REGEX.search(text or "")
     if not match:
         raise ValueError(f"No amount found in text: {text!r}")
     try:
@@ -28,9 +28,9 @@ def parse_amount(text: str) -> Decimal:
         raise ValueError(f"Cannot parse amount from {text!r}") from exc
 
 
-def round_money(value: Decimal) -> Decimal:
-    return value.quantize(TWO_PLACES, rounding=ROUND_HALF_UP)
+def round_half_up(value: Decimal) -> Decimal:
+    return value.quantize(CENTS, rounding=ROUND_HALF_UP)
 
 
-def has_at_most_two_decimals(value: Decimal) -> bool:
-    return value == value.quantize(TWO_PLACES)
+def has_two_decimals(value: Decimal) -> bool:
+    return value == value.quantize(CENTS)

@@ -31,7 +31,7 @@ class Locator:
         strategy = (AppiumBy.ACCESSIBILITY_ID, value)
         return cls(android=strategy, ios=strategy, description=description or value)
 
-    def for_platform(self, platform: str) -> Strategy:
+    def resolve(self, platform: str) -> Strategy:
         if platform == "android":
             return self.android
         if platform == "ios":

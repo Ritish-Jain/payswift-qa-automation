@@ -17,57 +17,57 @@ class OrderSummary:
     item_total: Decimal
     tax: Decimal
     total: Decimal
-    raw: dict
+    raw_text: dict
 
 
 class CheckoutInfoPage(BasePage):
     SCREEN = Info.SCREEN
 
-    def fill(self, first_name: str, last_name: str, postal_code: str) -> "CheckoutInfoPage":
-        self.type_text(Info.FIRST_NAME, first_name)
-        self.type_text(Info.LAST_NAME, last_name)
-        self.type_text(Info.POSTAL_CODE, postal_code)
-        self.hide_keyboard_if_shown()
+    def fill_details(self, first_name: str, last_name: str, postal_code: str) -> "CheckoutInfoPage":
+        self.enter_text(Info.FIRST_NAME, first_name)
+        self.enter_text(Info.LAST_NAME, last_name)
+        self.enter_text(Info.POSTAL_CODE, postal_code)
+        self.hide_keyboard()
         return self
 
-    def continue_to_overview(self) -> "CheckoutOverviewPage":
-        self.tap(Info.CONTINUE)
-        return CheckoutOverviewPage(self.driver, self.settings).wait_until_loaded()
+    def click_continue(self) -> "CheckoutOverviewPage":
+        self.click(Info.CONTINUE)
+        return CheckoutOverviewPage(self.driver, self.settings).wait_for_page()
 
-    def submit_expecting_error(self) -> str:
-        self.tap(Info.CONTINUE)
-        return self.text_of(Info.ERROR_MESSAGE)
+    def continue_and_get_error(self) -> str:
+        self.click(Info.CONTINUE)
+        return self.get_text(Info.ERROR_MESSAGE)
 
 
 class CheckoutOverviewPage(BasePage):
     SCREEN = Overview.SCREEN
 
-    def summary(self) -> OrderSummary:
+    def get_order_summary(self) -> OrderSummary:
         self.scroll_to(Overview.TOTAL)
-        raw = {
-            "item_total": self.text_of(Overview.ITEM_TOTAL),
-            "tax": self.text_of(Overview.TAX),
-            "total": self.text_of(Overview.TOTAL),
+        raw_text = {
+            "item_total": self.get_text(Overview.ITEM_TOTAL),
+            "tax": self.get_text(Overview.TAX),
+            "total": self.get_text(Overview.TOTAL),
         }
         return OrderSummary(
-            item_total=parse_amount(raw["item_total"]),
-            tax=parse_amount(raw["tax"]),
-            total=parse_amount(raw["total"]),
-            raw=raw,
+            item_total=parse_amount(raw_text["item_total"]),
+            tax=parse_amount(raw_text["tax"]),
+            total=parse_amount(raw_text["total"]),
+            raw_text=raw_text,
         )
 
-    def finish(self) -> "CheckoutCompletePage":
+    def click_finish(self) -> "CheckoutCompletePage":
         self.scroll_to(Overview.FINISH)
-        self.tap(Overview.FINISH)
-        return CheckoutCompletePage(self.driver, self.settings).wait_until_loaded()
+        self.click(Overview.FINISH)
+        return CheckoutCompletePage(self.driver, self.settings).wait_for_page()
 
 
 class CheckoutCompletePage(BasePage):
     SCREEN = Done.SCREEN
 
-    def shows_confirmation(self, header_text: str) -> bool:
+    def is_order_confirmed(self, header_text: str) -> bool:
         try:
-            self.waits.visible(Done.CONFIRMATION_HEADER.format(text=header_text))
+            self.waits.wait_for_visible(Done.CONFIRMATION_HEADER.format(text=header_text))
         except TimeoutException:
             return False
         return True

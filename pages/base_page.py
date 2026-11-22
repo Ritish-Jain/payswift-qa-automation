@@ -16,37 +16,37 @@ class BasePage:
     def __init__(self, driver, settings: Settings):
         self.driver = driver
         self.settings = settings
-        self.waits = Waits(driver, settings.platform, settings.explicit_wait_seconds)
-        self.gestures = Gestures(driver, self.waits, settings.max_scroll_attempts)
+        self.waits = Waits(driver, settings.platform, settings.wait_timeout)
+        self.gestures = Gestures(driver, self.waits, settings.max_swipes)
 
     # ---- screen state -------------------------------------------------------------
-    def wait_until_loaded(self):
+    def wait_for_page(self):
         if self.SCREEN is not None:
-            self.waits.visible(self.SCREEN)
+            self.waits.wait_for_visible(self.SCREEN)
         return self
 
     def is_displayed(self) -> bool:
-        return self.SCREEN is not None and self.waits.is_visible_now(self.SCREEN)
+        return self.SCREEN is not None and self.waits.is_visible(self.SCREEN)
 
     # ---- element actions ----------------------------------------------------------
-    def tap(self, locator: Locator) -> None:
-        self.waits.clickable(locator).click()
+    def click(self, locator: Locator) -> None:
+        self.waits.wait_for_clickable(locator).click()
 
-    def type_text(self, locator: Locator, text: str) -> None:
-        element = self.waits.visible(locator)
+    def enter_text(self, locator: Locator, text: str) -> None:
+        element = self.waits.wait_for_visible(locator)
         element.clear()
         if text:
             element.send_keys(text)
 
-    def text_of(self, locator: Locator) -> str:
-        return self.waits.visible(locator).text
+    def get_text(self, locator: Locator) -> str:
+        return self.waits.wait_for_visible(locator).text
 
-    def texts_of(self, locator: Locator) -> list[str]:
-        return [el.text for el in self.waits.all_present(locator)]
+    def get_texts(self, locator: Locator) -> list[str]:
+        return [el.text for el in self.waits.wait_for_all(locator)]
 
-    def scroll_to(self, locator: Locator, list_marker: Locator | None = None) -> None:
-        self.gestures.scroll_until_visible(locator, list_marker)
+    def scroll_to(self, locator: Locator, list_items: Locator | None = None) -> None:
+        self.gestures.swipe_until_visible(locator, list_items)
 
-    def hide_keyboard_if_shown(self) -> None:
+    def hide_keyboard(self) -> None:
         if self.driver.is_keyboard_shown():
             self.driver.hide_keyboard()

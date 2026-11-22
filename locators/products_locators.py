@@ -6,10 +6,10 @@ from framework.locator import Locator
 class ProductsLocators:
     SCREEN = Locator.accessibility_id("test-PRODUCTS", "Products screen")
     CART_ICON = Locator.accessibility_id("test-Cart", "Cart icon")
-    ITEM_TITLES = Locator.accessibility_id("test-Item title", "All visible product titles")
+    PRODUCT_TITLES = Locator.accessibility_id("test-Item title", "All visible product titles")
 
     # Product title by visible name. Android keeps the name in @text, iOS in label.
-    ITEM_TITLE_BY_NAME = Locator(
+    PRODUCT_TITLE = Locator(
         android=(
             AppiumBy.ANDROID_UIAUTOMATOR,
             'new UiSelector().description("test-Item title").text("{name}")',
@@ -21,7 +21,7 @@ class ProductsLocators:
 
 class ProductDetailLocators:
     SCREEN = Locator.accessibility_id("test-Inventory item page", "Product detail screen")
-    DESCRIPTION_TEXTS = Locator(
+    DETAIL_TEXTS = Locator(
         android=(AppiumBy.XPATH, '//*[@content-desc="test-Description"]/android.widget.TextView'),
         ios=(AppiumBy.IOS_CLASS_CHAIN, '**/XCUIElementTypeOther[`name == "test-Description"`]/**/XCUIElementTypeStaticText'),
         description="Product name and description texts",

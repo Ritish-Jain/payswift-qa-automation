@@ -10,7 +10,7 @@ from pages.checkout_pages import CheckoutInfoPage
 class CartPage(BasePage):
     SCREEN = C.SCREEN
 
-    def contains_item(self, name: str) -> bool:
+    def has_item(self, name: str) -> bool:
         locator = C.ITEM_NAME.format(name=name)
         try:
             self.scroll_to(locator)
@@ -18,7 +18,7 @@ class CartPage(BasePage):
             return False
         return True
 
-    def checkout(self) -> CheckoutInfoPage:
+    def proceed_to_checkout(self) -> CheckoutInfoPage:
         self.scroll_to(C.CHECKOUT)
-        self.tap(C.CHECKOUT)
-        return CheckoutInfoPage(self.driver, self.settings).wait_until_loaded()
+        self.click(C.CHECKOUT)
+        return CheckoutInfoPage(self.driver, self.settings).wait_for_page()

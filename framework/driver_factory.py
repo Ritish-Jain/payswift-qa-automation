@@ -13,9 +13,9 @@ from appium.options.ios import XCUITestOptions
 
 from framework.config import Settings, load_capabilities
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-_OPTIONS_BY_PLATFORM = {
+PLATFORM_OPTIONS = {
     "android": UiAutomator2Options,
     "ios": XCUITestOptions,
 }
@@ -23,8 +23,8 @@ _OPTIONS_BY_PLATFORM = {
 
 def create_driver(settings: Settings) -> webdriver.Remote:
     caps = load_capabilities(settings.platform)
-    options = _OPTIONS_BY_PLATFORM[settings.platform]().load_capabilities(caps)
-    log.info("Starting %s session on %s", settings.platform, settings.appium_server_url)
+    options = PLATFORM_OPTIONS[settings.platform]().load_capabilities(caps)
+    logger.info("Starting %s session on %s", settings.platform, settings.appium_server_url)
     driver = webdriver.Remote(settings.appium_server_url, options=options)
     # Implicit waits are disabled on purpose: mixing them with explicit waits makes
     # timeouts unpredictable. All synchronisation goes through framework.waits.

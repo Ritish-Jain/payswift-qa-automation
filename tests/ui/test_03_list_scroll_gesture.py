@@ -8,20 +8,20 @@ from __future__ import annotations
 
 import pytest
 
-from framework.data_loader import load
+from framework.data_loader import load_test_data
 from framework.money import parse_amount
 
 pytestmark = [pytest.mark.ui, pytest.mark.gesture]
 
 
-def test_swipe_to_last_product_and_verify_details(logged_in):
-    products_data = load("products")
+def test_scroll_to_product(products_page):
+    products_data = load_test_data("products")
     target = products_data["scroll_target"]
     expected = products_data["catalog"][target]
 
-    detail = logged_in.scroll_to_product(target).open_product(target)
-    name, description = detail.name_and_description()
+    detail = products_page.scroll_to_product(target).open_product(target)
+    name, description = detail.get_name_and_description()
 
     assert name == target
     assert description.startswith(expected["description_starts_with"])
-    assert parse_amount(detail.price_text()) == expected["price"]
+    assert parse_amount(detail.get_price()) == expected["price"]

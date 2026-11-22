@@ -261,7 +261,7 @@ There appear to be two defects, either of which would have prevented the double 
 
 While mapping locators, I read the demo app's JavaScript bundle (Sauce Labs Swag Labs 2.7.1). The checkout overview builds "Item total" by summing prices as JavaScript floats and prints the result without rounding, while Tax and Total are rounded with `toFixed(2)`. Adding **Sauce Labs Bike Light (9.99)** and then **Sauce Labs Fleece Jacket (49.99)** should therefore display `Item total: $59.980000000000004`.
 
-I found this through static review, not on a device, so it needs confirming before it is reported. It is the same class of bug as TS-04: an amount handled as a binary float somewhere between input and display. The automation framework compares all money as `Decimal` and has a guard (`has_at_most_two_decimals`) that would fail the happy-path test if a cart with those items were used.
+I found this through static review, not on a device, so it needs confirming before it is reported. It is the same class of bug as TS-04: an amount handled as a binary float somewhere between input and display. The automation framework compares all money as `Decimal` and has a guard (`has_two_decimals`) that would fail the happy-path test if a cart with those items were used.
 
 ## 7. Automation Coverage Map
 
@@ -269,7 +269,7 @@ I found this through static review, not on a device, so it needs confirming befo
 |----------|-----------|
 | TS-01 | `tests/ui/test_01_checkout_happy_path.py` (demo app stand-in), `tests/api/test_transfer_initiate.py` |
 | TS-02, TS-04 | API amount precision check in `tests/api/test_transfer_initiate.py`. Full BVA requires PaySwift staging (see negative matrix N8-N11) |
-| TS-07 | `tests/ui/test_02_validation_errors.py::test_login_rejected_with_exact_message[locked_out_user]` (demo stand-in for lockout messaging) |
-| TS-09, TS-10 | `tests/ui/test_02_validation_errors.py::test_checkout_form_rejects_missing_fields` (required-field validation stand-in) |
+| TS-07 | `tests/ui/test_02_validation_errors.py::test_invalid_login[locked_out_user]` (demo stand-in for lockout messaging) |
+| TS-09, TS-10 | `tests/ui/test_02_validation_errors.py::test_checkout_missing_fields` (required-field validation stand-in) |
 | Transaction history lookup | `tests/ui/test_03_list_scroll_gesture.py` |
 | TS-03, TS-05, TS-06, TS-08 | Manual with proxy tooling now; API-level automation planned once a staging environment with idempotency and limits is available |

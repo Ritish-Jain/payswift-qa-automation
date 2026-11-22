@@ -21,7 +21,7 @@ def pytest_addoption(parser):
     )
 
 
-def _safe_name(nodeid: str) -> str:
+def _clean_filename(nodeid: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", nodeid)[-150:]
 
 
@@ -38,8 +38,8 @@ def pytest_runtest_makereport(item, call):
         return
 
     SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base_name = f"{_safe_name(item.nodeid)}_{stamp}"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_name = f"{_clean_filename(item.nodeid)}_{timestamp}"
     png_path = SCREENSHOT_DIR / f"{base_name}.png"
     xml_path = SCREENSHOT_DIR / f"{base_name}.xml"
 

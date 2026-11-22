@@ -14,7 +14,7 @@ TEST_DATA_DIR = PROJECT_ROOT / "test_data"
 
 
 @lru_cache(maxsize=None)
-def load(name: str) -> dict:
+def load_test_data(name: str) -> dict:
     path = TEST_DATA_DIR / f"{name}.json"
-    with path.open(encoding="utf-8") as fh:
-        return json.load(fh, parse_float=Decimal)
+    with path.open(encoding="utf-8") as f:
+        return json.load(f, parse_float=Decimal)

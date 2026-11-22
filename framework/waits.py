@@ -19,31 +19,31 @@ class Waits:
         self.platform = platform
         self.timeout = timeout
 
-    def _wait(self, timeout: float | None) -> WebDriverWait:
+    def _get_wait(self, timeout: float | None) -> WebDriverWait:
         return WebDriverWait(self.driver, timeout if timeout is not None else self.timeout, poll_frequency=0.25)
 
-    def visible(self, locator: Locator, timeout: float | None = None) -> WebElement:
-        strategy = locator.for_platform(self.platform)
+    def wait_for_visible(self, locator: Locator, timeout: float | None = None) -> WebElement:
+        strategy = locator.resolve(self.platform)
         try:
-            return self._wait(timeout).until(EC.visibility_of_element_located(strategy))
+            return self._get_wait(timeout).until(EC.visibility_of_element_located(strategy))
         except TimeoutException as exc:
             raise TimeoutException(f"Element not visible: {locator} using {strategy}") from exc
 
-    def clickable(self, locator: Locator, timeout: float | None = None) -> WebElement:
-        strategy = locator.for_platform(self.platform)
+    def wait_for_clickable(self, locator: Locator, timeout: float | None = None) -> WebElement:
+        strategy = locator.resolve(self.platform)
         try:
-            return self._wait(timeout).until(EC.element_to_be_clickable(strategy))
+            return self._get_wait(timeout).until(EC.element_to_be_clickable(strategy))
         except TimeoutException as exc:
             raise TimeoutException(f"Element not clickable: {locator} using {strategy}") from exc
 
-    def all_present(self, locator: Locator, timeout: float | None = None) -> list[WebElement]:
-        strategy = locator.for_platform(self.platform)
+    def wait_for_all(self, locator: Locator, timeout: float | None = None) -> list[WebElement]:
+        strategy = locator.resolve(self.platform)
         try:
-            return self._wait(timeout).until(EC.presence_of_all_elements_located(strategy))
+            return self._get_wait(timeout).until(EC.presence_of_all_elements_located(strategy))
         except TimeoutException as exc:
             raise TimeoutException(f"No elements found: {locator} using {strategy}") from exc
 
-    def is_visible_now(self, locator: Locator) -> bool:
+    def is_visible(self, locator: Locator) -> bool:
         """Non-blocking check, used inside scroll loops."""
-        elements = self.driver.find_elements(*locator.for_platform(self.platform))
+        elements = self.driver.find_elements(*locator.resolve(self.platform))
         return any(el.is_displayed() for el in elements)

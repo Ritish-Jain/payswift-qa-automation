@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from framework.config import load_settings
-from framework.data_loader import load
+from framework.data_loader import load_test_data
 from framework.driver_factory import create_driver
 from pages.login_page import LoginPage
 
@@ -23,10 +23,10 @@ def driver(settings):
 
 @pytest.fixture
 def login_page(driver, settings) -> LoginPage:
-    return LoginPage(driver, settings).wait_until_loaded()
+    return LoginPage(driver, settings).wait_for_page()
 
 
 @pytest.fixture
-def logged_in(login_page):
-    user = load("users")["valid_user"]
-    return login_page.login_as(user["username"], user["password"])
+def products_page(login_page):
+    user = load_test_data("users")["valid_user"]
+    return login_page.login(user["username"], user["password"])
