@@ -1,0 +1,28 @@
+{
+  "happy_path": {
+    "items": ["Sauce Labs Backpack", "Sauce Labs Bolt T-Shirt"],
+    "customer": {
+      "first_name": "Asha",
+      "last_name": "Verma",
+      "postal_code": "560001"
+    },
+    "tax_rate": 0.08,
+    "confirmation_header": "THANK YOU FOR YOU ORDER"
+  },
+  "validation_cases": [
+    {
+      "id": "missing_first_name",
+      "first_name": "",
+      "last_name": "Verma",
+      "postal_code": "560001",
+      "expected_error": "First Name is required"
+    },
+    {
+      "id": "missing_postal_code",
+      "first_name": "Asha",
+      "last_name": "Verma",
+      "postal_code": "",
+      "expected_error": "Postal Code is required"
+    }
+  ]
+}

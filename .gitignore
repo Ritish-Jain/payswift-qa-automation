@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.ven/
+venv/
+
+# App binaries are downloaded by scripts/download_apps.sh
+apps/*
+!apps/.gitkeep
+
+# Generated reports (keep the folder, and the committed sample screenshot in docs/)
+reports/*
+!reports/.gitkeep
+allure-results/
+allure-report/
+newman/

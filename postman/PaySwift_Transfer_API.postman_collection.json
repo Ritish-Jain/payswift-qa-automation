@@ -1,0 +1,152 @@
+{
+  "info": {
+    "name": "PaySwift - Transfer Initiation API",
+    "description": "Transfer initiation contract checks for the PaySwift QA assignment, run against the public mock `POST https://jsonplaceholder.typicode.com/posts`.\n\nThe mock echoes the request and adds an integer `id`, used here as the generated transaction id. It cannot enforce business rules, so the negative scenarios below are documented for a real PaySwift environment rather than executed against the mock. The full matrix with expected UI states is in `docs/NEGATIVE_API_TEST_MATRIX.md`.\n\n| # | Scenario | Expected status | Key assertion |\n|---|----------|-----------------|---------------|\n| N1 | Missing / expired / tampered JWT | 401 | No transfer created; app routes to re-login |\n| N2 | Valid token, sender account not owned by caller | 403 | No data about the other account leaked |\n| N3 | Same idempotencyKey + same body replayed | 200/201 with original txn id | Exactly one debit; ledger unchanged on replay |\n| N4 | Same idempotencyKey + different body | 409 or 422 | Request rejected; original txn untouched |\n| N5 | Amount below minimum (9.99) / above per-txn max (50000.01) | 422 | Error code identifies the rule |\n| N6 | Amount with 3 decimals (10.005), zero, negative, string, NaN | 400 / 422 | No rounding on the server |\n| N7 | Insufficient balance | 422 | Balance unchanged |\n| N8 | Daily cumulative limit exceeded (sum + amount > 100000.00) | 422 | Limit counted per IST calendar day |\n| N9 | Unknown / closed / blocked receiver | 404 / 422 | No debit |\n| N10 | Missing idempotencyKey header/field | 400 | Server refuses non-idempotent money movement |\n| N11 | Unsupported currency, malformed JSON, wrong Content-Type | 400 / 415 | |\n| N12 | Burst of requests from one user/device | 429 + Retry-After | Client backs off |\n| N13 | Locked account (3 failed PINs) | 423 or 403 | Lock expiry honoured after 15 min |\n| N14 | Core banking timeout / downstream 5xx | 502 / 503 / 504 | Client shows \"Transaction Pending - Do Not Retry\" and polls status by idempotencyKey; no auto-retry with a new key |\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    },
+    {
+      "key": "maxLatencyMs",
+      "value": "1000"
+    },
+    {
+      "key": "lastTransactionId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Initiate transfer - happy path",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"senderId\": \"USR_9981\",\n    \"receiverId\": \"USR_4420\",\n    \"amount\": 2500.50,\n    \"currency\": \"INR\",\n    \"idempotencyKey\": \"txn-uuid-12345\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts"
+          ]
+        },
+        "description": "Posts the assignment payload and checks status, latency, headers, schema, echoed fields and the generated transaction id."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const req = JSON.parse(pm.request.body.raw);",
+              "const maxLatency = Number(pm.collectionVariables.get(\"maxLatencyMs\"));",
+              "const schema = {",
+              "    \"title\": \"Transfer initiation response (mock echo + generated id)\",",
+              "    \"type\": \"object\",",
+              "    \"required\": [",
+              "        \"id\",",
+              "        \"senderId\",",
+              "        \"receiverId\",",
+              "        \"amount\",",
+              "        \"currency\",",
+              "        \"idempotencyKey\"",
+              "    ],",
+              "    \"properties\": {",
+              "        \"id\": {",
+              "            \"type\": \"integer\",",
+              "            \"minimum\": 1,",
+              "            \"description\": \"Generated transaction id\"",
+              "        },",
+              "        \"senderId\": {",
+              "            \"type\": \"string\",",
+              "            \"pattern\": \"^USR_[0-9]+$\"",
+              "        },",
+              "        \"receiverId\": {",
+              "            \"type\": \"string\",",
+              "            \"pattern\": \"^USR_[0-9]+$\"",
+              "        },",
+              "        \"amount\": {",
+              "            \"type\": \"number\",",
+              "            \"exclusiveMinimum\": 0",
+              "        },",
+              "        \"currency\": {",
+              "            \"type\": \"string\",",
+              "            \"enum\": [",
+              "                \"INR\"",
+              "            ]",
+              "        },",
+              "        \"idempotencyKey\": {",
+              "            \"type\": \"string\",",
+              "            \"minLength\": 1",
+              "        }",
+              "    },",
+              "    \"additionalProperties\": true",
+              "};",
+              "",
+              "pm.test(\"Status is 201 Created\", () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(`Response time is below ${maxLatency} ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(maxLatency);",
+              "});",
+              "",
+              "pm.test(\"Content-Type is application/json\", () => {",
+              "    const ct = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "    pm.expect(ct.split(\";\")[0].trim().toLowerCase()).to.eql(\"application/json\");",
+              "});",
+              "",
+              "pm.test(\"Body matches transfer response schema\", () => {",
+              "    pm.response.to.have.jsonSchema(schema);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "",
+              "[\"senderId\", \"receiverId\", \"currency\", \"idempotencyKey\"].forEach((field) => {",
+              "    pm.test(`${field} is echoed unchanged`, () => {",
+              "        pm.expect(body[field]).to.eql(req[field]);",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Amount is echoed exactly and has at most 2 decimals\", () => {",
+              "    pm.expect(body.amount).to.be.a(\"number\");",
+              "    pm.expect(body.amount).to.eql(req.amount);",
+              "    // Compare as text so a float artefact like 2500.5000000001 is caught",
+              "    const decimals = (String(body.amount).split(\".\")[1] || \"\").length;",
+              "    pm.expect(decimals).to.be.at.most(2);",
+              "});",
+              "",
+              "pm.test(\"Transaction id is generated\", () => {",
+              "    pm.expect(body.id).to.be.a(\"number\");",
+              "    pm.expect(Number.isInteger(body.id)).to.be.true;",
+              "    pm.expect(body.id).to.be.above(0);",
+              "    pm.collectionVariables.set(\"lastTransactionId\", body.id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

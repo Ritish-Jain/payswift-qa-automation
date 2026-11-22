@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Transfer initiation response (mock echo + generated id)",
+  "type": "object",
+  "required": ["id", "senderId", "receiverId", "amount", "currency", "idempotencyKey"],
+  "properties": {
+    "id": {"type": "integer", "minimum": 1, "description": "Generated transaction id"},
+    "senderId": {"type": "string", "pattern": "^USR_[0-9]+$"},
+    "receiverId": {"type": "string", "pattern": "^USR_[0-9]+$"},
+    "amount": {"type": "number", "exclusiveMinimum": 0},
+    "currency": {"type": "string", "enum": ["INR"]},
+    "idempotencyKey": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}

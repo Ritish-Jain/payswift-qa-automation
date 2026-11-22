@@ -1,0 +1,11 @@
+{
+  "endpoint": "/posts",
+  "max_latency_ms": 1000,
+  "transfer_request": {
+    "senderId": "USR_9981",
+    "receiverId": "USR_4420",
+    "amount": 2500.50,
+    "currency": "INR",
+    "idempotencyKey": "txn-uuid-12345"
+  }
+}
